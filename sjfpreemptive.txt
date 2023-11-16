@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Entry {
+public:
+    string Process;
+    int A_time;
+    int B_time;
+    int C_time;
+    int T_time;
+    int W_time;
+};
+
+int main() {
+    int n;
+    cout << "Enter the number of processes: ";
+    cin >> n;
+
+    vector<Entry> processes(n);
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter the Process Name: ";
+        cin >> processes[i].Process;
+        cout << "Enter the Arrival Time of Process " << processes[i].Process << ": ";
+        cin >> processes[i].A_time;
+        cout << "Enter the Burst Time of Process " << processes[i].Process << ": ";
+        cin >> processes[i].B_time;
+    }
+
+    int totalTurnaroundTime = 0;
+    int totalWaitingTime = 0;
+
+    vector<int> remainingTime(n);
+    for (int i = 0; i < n; i++) {
+        remainingTime[i] = processes[i].B_time;
+    }
+
+    int currentTime = 0;
+    int completed = 0;
+
+    cout << "Gantt Chart:" << endl;
+    string ganttChart;
+
+    while (completed != n) {
+        int shortest = -1;
+        int shortestBurst = 999;
+
+        for (int i = 0; i < n; i++) {
+            if (processes[i].A_time <= currentTime && remainingTime[i] < shortestBurst && remainingTime[i] > 0) {
+                shortest = i;
+                shortestBurst = remainingTime[i];
+            }
+        }
+
+        if (shortest == -1) {
+            currentTime++;
+            ganttChart += "-  ";
+        } else {
+            remainingTime[shortest]--;
+            currentTime++;
+            ganttChart += processes[shortest].Process + "  ";
+            if (remainingTime[shortest] == 0) {
+                completed++;
+                processes[shortest].C_time = currentTime;
+                processes[shortest].T_time = processes[shortest].C_time - processes[shortest].A_time;
+                processes[shortest].W_time = processes[shortest].T_time - processes[shortest].B_time;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        totalTurnaroundTime += processes[i].T_time;
+        totalWaitingTime += processes[i].W_time;
+    }
+
+    cout << ganttChart << endl << endl;
+    cout << "PID\t\tArrival Time\tBurst Time\tCompletion Time\t\tTurnaround Time\t\tWaiting Time" << endl;
+
+    for (int i = 0; i < n; i++) {
+        cout << processes[i].Process << "\t\t\t" << processes[i].A_time << "\t\t\t\t" << processes[i].B_time
+             << "\t\t\t\t" << processes[i].C_time << "\t\t\t\t" << processes[i].T_time << "\t\t\t\t" << processes[i].W_time << endl;
+    }
+
+    double avgTurnaroundTime = (double)totalTurnaroundTime / n;
+    double avgWaitingTime = (double)totalWaitingTime / n;
+
+    cout << "\nAverage Turnaround Time: " << avgTurnaroundTime << " ms" << endl;
+    cout << "Average Waiting Time: " << avgWaitingTime << " ms" << endl;
+
+    return 0;
+}

@@ -1,0 +1,8 @@
+ javac -h . B1.java
+(base) admin1@408-21:~$ javac B1.java
+(base) admin1@408-21:~$ javah B1
+(base) admin1@408-21:~$  gcc -fPIC -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -shared -o libb1.so B1.c
+(base) admin1@408-21:~$ java -Djava.library.path=. B1
+
+
+

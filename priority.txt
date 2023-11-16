@@ -1,0 +1,101 @@
+
+#include <iostream>
+#include <algorithm> 
+using namespace std;
+
+#define totalprocess 5
+
+
+struct process
+{
+    int at, bt, pr, pno;
+};
+
+process proc[50];
+
+bool comp(process a, process b)
+{
+    if (a.at == b.at)
+    {
+        return a.pr < b.pr;
+    }
+    else
+    {
+        return a.at < b.at;
+    }
+}
+
+void CalculateTimes(int processes, int arrival_time[], int burst_time[])
+{
+    int waiting_time[processes];
+    int turnaround_time[processes];
+
+    waiting_time[0] = 0;
+
+    
+    for (int i = 1; i < processes; i++)
+    {
+        waiting_time[i] = (arrival_time[i - 1] + burst_time[i - 1] + waiting_time[i - 1]) - arrival_time[i];
+
+        if (waiting_time[i] < 0)
+            waiting_time[i] = 0;
+    }
+
+    for (int i = 0; i < processes; i++)
+    {
+        turnaround_time[i] = burst_time[i] + waiting_time[i];
+    }
+
+  
+    cout << "Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n";
+    float avg_waiting_time = 0, avg_turnaround_time = 0;
+    for (int i = 0; i < processes; i++)
+    {
+        cout << i + 1 << "\t\t" << arrival_time[i] << "\t\t" << burst_time[i] << "\t\t" << waiting_time[i] << "\t\t" << turnaround_time[i] << endl;
+
+       
+        avg_waiting_time += waiting_time[i];
+        avg_turnaround_time += turnaround_time[i];
+    }
+
+    avg_waiting_time /= processes;
+    avg_turnaround_time /= processes;
+
+    cout << "\nAverage Waiting Time: " << avg_waiting_time << endl;
+    cout << "Average Turnaround Time: " << avg_turnaround_time << endl;
+}
+
+int main()
+{
+    
+    for (int i = 0; i < totalprocess; i++)
+    {
+        cout << "Enter arrival time for process " << i + 1 << ": ";
+        cin >> proc[i].at;
+
+        cout << "Enter burst time for process " << i + 1 << ": ";
+        cin >> proc[i].bt;
+
+        cout << "Enter priority for process " << i + 1 << ": ";
+        cin >> proc[i].pr;
+
+        proc[i].pno = i + 1;
+    }
+
+    
+    sort(proc, proc + totalprocess, comp);
+
+   
+    int arrival_times[totalprocess];
+    int burst_times[totalprocess];
+
+    for (int i = 0; i < totalprocess; i++)
+    {
+        arrival_times[i] = proc[i].at;
+        burst_times[i] = proc[i].bt;
+    }
+
+    CalculateTimes(totalprocess, arrival_times, burst_times);
+
+    return 0;
+}
